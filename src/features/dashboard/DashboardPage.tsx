@@ -23,7 +23,6 @@ import { RangePicker } from '@/components/layout/RangePicker';
 import { useDashboard } from '@/api/queries';
 import { useRange } from '@/hooks/useRange';
 import { compact, currency, longDate, percent } from '@/lib/format';
-import { cn } from '@/lib/cn';
 import { InsightList } from './InsightList';
 import { BudgetStrip } from './BudgetStrip';
 

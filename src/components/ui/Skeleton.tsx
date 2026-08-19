@@ -1,7 +1,8 @@
+import type { CSSProperties } from 'react';
 import { cn } from '@/lib/cn';
 
-export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('skeleton', className)} />;
+export function Skeleton({ className, style }: { className?: string; style?: CSSProperties }) {
+  return <div className={cn('skeleton', className)} style={style} />;
 }
 
 export function SkeletonCard({ height = 'h-64' }: { height?: string }) {
@@ -18,7 +19,7 @@ export function SkeletonRows({ rows = 6 }: { rows?: number }) {
   return (
     <div className="space-y-2.5">
       {Array.from({ length: rows }).map((_, i) => (
-        <Skeleton key={i} className="h-11 w-full" style={{ opacity: 1 - i * 0.08 } as never} />
+        <Skeleton key={i} className="h-11 w-full" style={{ opacity: 1 - i * 0.08 }} />
       ))}
     </div>
   );

@@ -11,22 +11,23 @@ pnpm dev          # http://localhost:5173  (proxies /api to :4000)
 
 Backend: https://github.com/vaseem148/Expense-Tracker-Analytics_BE
 
-## Status
+## Pages
 
-**Done**
-- Design tokens, light/dark theme (pre-paint, no flash), motion + reduced-motion
-- API client with single-flight token refresh, typed query/mutation layer
-- Chart kit: trend + forecast band, donut, bars, columns, heatmap, sparkline,
-  gauge, stat tiles, crosshair tooltips, legends
-- App shell: sidebar, topbar, notifications, ⌘K command palette, mobile nav
-- Realtime socket wiring, toasts, modals, form primitives
-- Pages: Login/Register, Dashboard, Transactions (filters, bulk ops, CSV export)
-
-**Next**
-- Analytics deep-dive, Budgets, Goals, Recurring pages
-- Business workspace (KPIs, P&L, departments, vendors, claims, payables)
-- Integrations, AI insights, Import/Export, Settings
-- Router + `main.tsx` wiring, production build
+| Route | What it does |
+| --- | --- |
+| `/` | KPI strip, trend + forecast, category donut, health score, insights, budgets, anomalies, detected subscriptions |
+| `/transactions` | Filters, search, sort, bulk re-categorise/delete, CSV export |
+| `/analytics` | Trends · Categories (Pareto, volatility) · Behaviour (heatmap, merchant cadence) · Compare (diverging deltas) |
+| `/budgets` | Consumption against a pace marker, projection when burning too fast |
+| `/goals` | Progress gauges with the monthly contribution needed to land on time |
+| `/recurring` | Declared rules plus subscriptions mined from history |
+| `/business` | Burn, runway, margin, cost per head, P&L, departments, vendor concentration, cash projection |
+| `/business/claims` | Reimbursement pipeline with approve / reject / reimburse |
+| `/business/invoices` | Accounts payable with aging buckets |
+| `/integrations` | Connector catalogue, sandbox connect + test + sync |
+| `/insights` | ML anomalies, merchant clusters, cash-flow risk, auto-categorise, train |
+| `/data` | CSV import with column mapping and dry run; CSV/JSON export |
+| `/settings` | Profile, theme, accounts, active sessions |
 
 ## Chart colour policy
 

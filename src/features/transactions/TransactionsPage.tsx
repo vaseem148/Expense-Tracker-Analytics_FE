@@ -1,19 +1,15 @@
 import { useMemo, useState } from 'react';
 import {
-  ArrowDownLeft,
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
   Download,
   Filter,
-  Pencil,
-  Repeat,
   Search,
   Trash2,
   X,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input, Select } from '@/components/ui/Field';
 import { SkeletonRows } from '@/components/ui/Skeleton';
@@ -29,16 +25,10 @@ import {
   type TransactionFilters,
 } from '@/api/queries';
 import type { Transaction } from '@/api/types';
-import { compact, currency, longDate } from '@/lib/format';
+import { compact } from '@/lib/format';
 import { cn } from '@/lib/cn';
 import { toast } from '@/store/toast';
 import { api } from '@/api/client';
-
-const TYPE_META = {
-  EXPENSE: { icon: ArrowUpRight, color: 'var(--s2)', sign: '-' },
-  INCOME: { icon: ArrowDownLeft, color: 'var(--s3)', sign: '+' },
-  TRANSFER: { icon: Repeat, color: 'var(--ink-muted)', sign: '' },
-} as const;
 
 export function TransactionsPage() {
   const [filters, setFilters] = useState<TransactionFilters>({ page: 1, limit: 25, sortDir: 'desc' });
