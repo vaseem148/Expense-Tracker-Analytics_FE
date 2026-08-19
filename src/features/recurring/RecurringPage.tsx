@@ -34,9 +34,9 @@ export function RecurringPage() {
     <div className="space-y-5">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Recurring</h1>
+          <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Subscriptions</h1>
           <p className="mt-0.5 text-[13px] text-[var(--ink-muted)]">
-            Declared rules that post themselves, plus subscriptions mined from your history
+            The fixed cost base: declared commitments plus charges mined from the ledger
           </p>
         </div>
         <Button variant="primary" icon={<Plus size={15} />} onClick={() => setOpen(true)}>
@@ -50,7 +50,7 @@ export function RecurringPage() {
         <>
           <section className="grid gap-4 sm:grid-cols-3">
             <StatTile
-              label="Active rules"
+              label="Active commitments"
               value={String(data.summary.active)}
               hint="Posting automatically"
               accent="var(--s1)"
@@ -59,7 +59,7 @@ export function RecurringPage() {
             <StatTile
               label="Monthly commitment"
               value={currency(data.summary.monthlyCommitment)}
-              hint="Locked in before you decide anything"
+              hint="Fixed cost before any decision"
               accent="var(--s2)"
             />
             <StatTile

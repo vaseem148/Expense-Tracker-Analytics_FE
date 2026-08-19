@@ -12,12 +12,7 @@ import { SessionsCard, type Session } from './SessionsCard';
 
 export function SettingsPage() {
   const { user, refreshUser } = useAuth();
-  const [profile, setProfile] = useState({
-    name: '',
-    currency: 'INR',
-    locale: 'en-IN',
-    monthlyIncome: '',
-  });
+  const [profile, setProfile] = useState({ name: '', currency: 'INR', locale: 'en-IN' });
   const [sessions, setSessions] = useState<Session[]>([]);
   const [busy, setBusy] = useState(false);
 
@@ -27,7 +22,6 @@ export function SettingsPage() {
       name: user.name,
       currency: user.currency,
       locale: user.locale ?? 'en-IN',
-      monthlyIncome: String(user.monthlyIncome ?? 0),
     });
     void api
       .get<Session[]>('/auth/sessions')
@@ -43,7 +37,6 @@ export function SettingsPage() {
         name: profile.name.trim(),
         currency: profile.currency,
         locale: profile.locale,
-        monthlyIncome: Number(profile.monthlyIncome || 0),
       });
       await refreshUser();
       toast.success('Profile saved');
@@ -59,7 +52,7 @@ export function SettingsPage() {
       <header>
         <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Settings</h1>
         <p className="mt-0.5 text-[13px] text-[var(--ink-muted)]">
-          Profile, appearance, accounts and active sessions
+          Your profile, appearance, company accounts and active sessions
         </p>
       </header>
 
@@ -67,7 +60,7 @@ export function SettingsPage() {
         <Card>
           <CardHeader
             title="Profile"
-            subtitle="Used for formatting and the savings-rate benchmark"
+            subtitle="How amounts and dates are formatted for you"
             icon={<User size={15} />}
           />
           <form onSubmit={saveProfile} className="space-y-4">
@@ -106,15 +99,6 @@ export function SettingsPage() {
                 </Select>
               </div>
             </FieldRow>
-            <div>
-              <Label hint="drives the savings-rate benchmark">Monthly income</Label>
-              <Input
-                type="number"
-                min="0"
-                value={profile.monthlyIncome}
-                onChange={(e) => setProfile({ ...profile, monthlyIncome: e.target.value })}
-              />
-            </div>
             <Button type="submit" variant="primary" loading={busy}>
               Save profile
             </Button>

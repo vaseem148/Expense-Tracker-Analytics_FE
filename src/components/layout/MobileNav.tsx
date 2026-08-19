@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { ArrowLeftRight, Building2, LayoutDashboard, Plus, TrendingUp } from 'lucide-react';
+import { Building2, LayoutDashboard, Plus, TrendingUp, Wallet } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 const ITEMS = [
-  { to: '/', label: 'Home', icon: LayoutDashboard, end: true },
-  { to: '/transactions', label: 'Ledger', icon: ArrowLeftRight },
+  { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
+  { to: '/expenses', label: 'Expenses', icon: Wallet },
   { to: '/analytics', label: 'Analytics', icon: TrendingUp },
-  { to: '/business', label: 'Business', icon: Building2 },
+  { to: '/financials', label: 'Financials', icon: Building2 },
 ];
 
 /** Bottom bar on small screens; the sidebar takes over from `lg` upwards. */

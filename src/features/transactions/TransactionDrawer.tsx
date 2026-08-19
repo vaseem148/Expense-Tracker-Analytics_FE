@@ -6,8 +6,13 @@ import {
   useAccounts,
   useCategories,
   useCreateTransaction,
+  useOrgDepartments,
+  useOrgProjects,
+  useOrgVendors,
   useUpdateTransaction,
 } from '@/api/queries';
+import { useRange } from '@/hooks/useRange';
+import { useActiveOrg } from '@/features/business/useActiveOrg';
 import type { Transaction } from '@/api/types';
 import { toast } from '@/store/toast';
 import { cn } from '@/lib/cn';
@@ -30,6 +35,11 @@ const today = () => new Date().toISOString().slice(0, 16);
 export function TransactionDrawer({ open, onClose, editing }: Props) {
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
+  const { orgId } = useActiveOrg();
+  const { range } = useRange('12m');
+  const departments = useOrgDepartments(orgId, range);
+  const vendors = useOrgVendors(orgId);
+  const projects = useOrgProjects(orgId);
   const create = useCreateTransaction();
   const update = useUpdateTransaction();
 
@@ -45,6 +55,12 @@ export function TransactionDrawer({ open, onClose, editing }: Props) {
     paymentMethod: 'UPI',
     notes: '',
     tags: '',
+    departmentId: '',
+    vendorId: '',
+    projectId: '',
+    taxRatePct: '18',
+    isBillable: false,
+    isReimbursable: false,
   });
 
   useEffect(() => {
@@ -62,6 +78,12 @@ export function TransactionDrawer({ open, onClose, editing }: Props) {
         paymentMethod: editing.paymentMethod,
         notes: editing.notes ?? '',
         tags: editing.tags.map((t) => t.name).join(', '),
+        departmentId: editing.department?.id ?? '',
+        vendorId: editing.vendor?.id ?? '',
+        projectId: editing.project?.id ?? '',
+        taxRatePct: String(editing.taxRateBps ? editing.taxRateBps / 100 : 18),
+        isBillable: editing.isBillable,
+        isReimbursable: false,
       });
     } else {
       setForm((f) => ({
@@ -75,6 +97,9 @@ export function TransactionDrawer({ open, onClose, editing }: Props) {
         merchant: '',
         notes: '',
         tags: '',
+        departmentId: '',
+        vendorId: '',
+        projectId: '',
       }));
     }
   }, [open, editing, accounts]);
@@ -99,6 +124,12 @@ export function TransactionDrawer({ open, onClose, editing }: Props) {
       ...(form.merchant ? { merchant: form.merchant.trim() } : {}),
       ...(form.notes ? { notes: form.notes.trim() } : {}),
       ...(form.tags ? { tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean) } : {}),
+      ...(form.departmentId ? { departmentId: form.departmentId } : {}),
+      ...(form.vendorId ? { vendorId: form.vendorId } : {}),
+      ...(form.projectId ? { projectId: form.projectId } : {}),
+      ...(form.taxRatePct ? { taxRatePct: Number(form.taxRatePct) } : {}),
+      isBillable: form.isBillable,
+      isReimbursable: form.isReimbursable,
     };
 
     try {
@@ -115,8 +146,8 @@ export function TransactionDrawer({ open, onClose, editing }: Props) {
     <Modal
       open={open}
       onClose={onClose}
-      title={editing ? 'Edit transaction' : 'New transaction'}
-      description={editing ? 'Changes recompute every analytic on the page.' : undefined}
+      title={editing ? 'Edit expense' : 'Record company expense'}
+      description="Attributing spend to a cost centre and vendor is what makes variance answerable."
       width="lg"
       footer={
         <>
@@ -265,12 +296,94 @@ export function TransactionDrawer({ open, onClose, editing }: Props) {
           </div>
         </FieldRow>
 
+        <FieldRow>
+          <div>
+            <Label hint="who the cost belongs to">Cost centre</Label>
+            <Select
+              value={form.departmentId}
+              onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
+            >
+              <option value="">Unassigned</option>
+              {(departments.data?.items ?? []).map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label hint="optional">Vendor</Label>
+            <Select
+              value={form.vendorId}
+              onChange={(e) => setForm({ ...form, vendorId: e.target.value })}
+            >
+              <option value="">No vendor</option>
+              {(vendors.data ?? []).map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </FieldRow>
+
+        <FieldRow>
+          <div>
+            <Label hint="for billable work">Project</Label>
+            <Select
+              value={form.projectId}
+              onChange={(e) => setForm({ ...form, projectId: e.target.value })}
+            >
+              <option value="">No project</option>
+              {(projects.data ?? []).map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label hint="inclusive of the amount above">GST rate</Label>
+            <Select
+              value={form.taxRatePct}
+              onChange={(e) => setForm({ ...form, taxRatePct: e.target.value })}
+            >
+              {['0', '5', '12', '18', '28'].map((r) => (
+                <option key={r} value={r}>
+                  {r}%
+                </option>
+              ))}
+            </Select>
+          </div>
+        </FieldRow>
+
+        <div className="flex flex-wrap gap-4 rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-3">
+          <label className="flex items-center gap-2 text-[13px] text-[var(--ink-2)]">
+            <input
+              type="checkbox"
+              checked={form.isBillable}
+              onChange={(e) => setForm({ ...form, isBillable: e.target.checked })}
+              className="h-3.5 w-3.5 accent-[var(--brand)]"
+            />
+            Re-billable to the client
+          </label>
+          <label className="flex items-center gap-2 text-[13px] text-[var(--ink-2)]">
+            <input
+              type="checkbox"
+              checked={form.isReimbursable}
+              onChange={(e) => setForm({ ...form, isReimbursable: e.target.checked })}
+              className="h-3.5 w-3.5 accent-[var(--brand)]"
+            />
+            Claimable by whoever paid
+          </label>
+        </div>
+
         <div>
           <Label hint="comma separated">Tags</Label>
           <Input
             value={form.tags}
             onChange={(e) => setForm({ ...form, tags: e.target.value })}
-            placeholder="work, reimbursable"
+            placeholder="q3-offsite, aws"
           />
         </div>
 

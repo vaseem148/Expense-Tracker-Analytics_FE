@@ -19,14 +19,20 @@ const AnalyticsPage = lazy(() =>
 const BudgetsPage = lazy(() =>
   import('./features/budgets/BudgetsPage').then((m) => ({ default: m.BudgetsPage })),
 );
-const GoalsPage = lazy(() =>
-  import('./features/goals/GoalsPage').then((m) => ({ default: m.GoalsPage })),
-);
 const RecurringPage = lazy(() =>
   import('./features/recurring/RecurringPage').then((m) => ({ default: m.RecurringPage })),
 );
-const BusinessPage = lazy(() =>
+const FinancialsPage = lazy(() =>
   import('./features/business/BusinessPage').then((m) => ({ default: m.BusinessPage })),
+);
+const VendorsPage = lazy(() =>
+  import('./features/company/VendorsPage').then((m) => ({ default: m.VendorsPage })),
+);
+const ProjectsPage = lazy(() =>
+  import('./features/company/ProjectsPage').then((m) => ({ default: m.ProjectsPage })),
+);
+const TeamPage = lazy(() =>
+  import('./features/company/TeamPage').then((m) => ({ default: m.TeamPage })),
 );
 const ClaimsPage = lazy(() =>
   import('./features/business/ClaimsPage').then((m) => ({ default: m.ClaimsPage })),
@@ -92,7 +98,7 @@ export function App() {
           }
         />
         <Route
-          path="transactions"
+          path="expenses"
           element={
             <Suspense fallback={<PageFallback />}>
               <TransactionsPage />
@@ -116,15 +122,7 @@ export function App() {
           }
         />
         <Route
-          path="goals"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <GoalsPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="recurring"
+          path="subscriptions"
           element={
             <Suspense fallback={<PageFallback />}>
               <RecurringPage />
@@ -132,15 +130,39 @@ export function App() {
           }
         />
         <Route
-          path="business"
+          path="financials"
           element={
             <Suspense fallback={<PageFallback />}>
-              <BusinessPage />
+              <FinancialsPage />
             </Suspense>
           }
         />
         <Route
-          path="business/claims"
+          path="vendors"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <VendorsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="projects"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <ProjectsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="team"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <TeamPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="claims"
           element={
             <Suspense fallback={<PageFallback />}>
               <ClaimsPage />
@@ -148,7 +170,7 @@ export function App() {
           }
         />
         <Route
-          path="business/invoices"
+          path="payables"
           element={
             <Suspense fallback={<PageFallback />}>
               <InvoicesPage />

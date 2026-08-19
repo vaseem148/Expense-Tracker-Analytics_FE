@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowLeftRight,
+  Briefcase,
   Blocks,
   Brain,
   Building2,
@@ -16,9 +16,10 @@ import {
   Repeat,
   Search,
   Settings,
+  Store,
   Sun,
-  Target,
   TrendingUp,
+  Users,
   Wallet,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -52,8 +53,8 @@ export function CommandPalette({ onNewTransaction }: { onNewTransaction: () => v
     return [
       {
         id: 'new-tx',
-        label: 'Add transaction',
-        hint: 'Record an expense or income',
+        label: 'Record expense',
+        hint: 'Log a company cost',
         group: 'Actions',
         icon: Plus,
         run: () => {
@@ -71,15 +72,17 @@ export function CommandPalette({ onNewTransaction }: { onNewTransaction: () => v
           setCommandOpen(false);
         },
       },
-      { id: 'dash', label: 'Dashboard', group: 'Navigate', icon: LayoutDashboard, run: go('/') },
-      { id: 'tx', label: 'Transactions', group: 'Navigate', icon: ArrowLeftRight, run: go('/transactions') },
+      { id: 'dash', label: 'Company overview', group: 'Navigate', icon: LayoutDashboard, run: go('/') },
+      { id: 'expenses', label: 'Expenses', group: 'Navigate', icon: Wallet, run: go('/expenses') },
       { id: 'analytics', label: 'Analytics', group: 'Navigate', icon: TrendingUp, run: go('/analytics') },
+      { id: 'financials', label: 'Financials', hint: 'P and L, cost centres, cash', group: 'Navigate', icon: Building2, run: go('/financials') },
       { id: 'budgets', label: 'Budgets', group: 'Navigate', icon: PiggyBank, run: go('/budgets') },
-      { id: 'goals', label: 'Savings goals', group: 'Navigate', icon: Target, run: go('/goals') },
-      { id: 'recurring', label: 'Recurring rules', group: 'Navigate', icon: Repeat, run: go('/recurring') },
-      { id: 'business', label: 'Business workspace', group: 'Navigate', icon: Building2, run: go('/business') },
-      { id: 'claims', label: 'Expense claims', group: 'Navigate', icon: Receipt, run: go('/business/claims') },
-      { id: 'invoices', label: 'Accounts payable', group: 'Navigate', icon: Wallet, run: go('/business/invoices') },
+      { id: 'subs', label: 'Subscriptions', group: 'Navigate', icon: Repeat, run: go('/subscriptions') },
+      { id: 'claims', label: 'Expense claims', group: 'Navigate', icon: Receipt, run: go('/claims') },
+      { id: 'payables', label: 'Accounts payable', group: 'Navigate', icon: Wallet, run: go('/payables') },
+      { id: 'vendors', label: 'Vendors', group: 'Navigate', icon: Store, run: go('/vendors') },
+      { id: 'projects', label: 'Projects', group: 'Navigate', icon: Briefcase, run: go('/projects') },
+      { id: 'team', label: 'Team', group: 'Navigate', icon: Users, run: go('/team') },
       { id: 'insights', label: 'AI insights', group: 'Navigate', icon: Brain, run: go('/insights') },
       { id: 'integrations', label: 'Integrations', group: 'Navigate', icon: Blocks, run: go('/integrations') },
       { id: 'data', label: 'Import and export', group: 'Navigate', icon: FileSpreadsheet, run: go('/data') },

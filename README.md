@@ -1,8 +1,8 @@
 # Expense Analytics — Frontend
 
-React 19 + Vite + Tailwind v4 client for the Expense Analytics API.
-Charts are hand-built SVG (no charting library) against a **validated**
-data-viz palette.
+React 19 + Vite + Tailwind v4 client for the Expense Analytics API — a
+**company spend platform**. Charts are hand-built SVG (no charting library)
+against a **validated** data-viz palette.
 
 ```bash
 pnpm install
@@ -15,19 +15,25 @@ Backend: https://github.com/vaseem148/Expense-Tracker-Analytics_BE
 
 | Route | What it does |
 | --- | --- |
-| `/` | KPI strip, trend + forecast, category donut, health score, insights, budgets, anomalies, detected subscriptions |
-| `/transactions` | Filters, search, sort, bulk re-categorise/delete, CSV export |
-| `/analytics` | Trends · Categories (Pareto, volatility) · Behaviour (heatmap, merchant cadence) · Compare (diverging deltas) |
-| `/budgets` | Consumption against a pace marker, projection when burning too fast |
-| `/goals` | Progress gauges with the monthly contribution needed to land on time |
-| `/recurring` | Declared rules plus subscriptions mined from history |
-| `/business` | Burn, runway, margin, cost per head, P&L, departments, vendor concentration, cash projection |
-| `/business/claims` | Reimbursement pipeline with approve / reject / reimburse |
-| `/business/invoices` | Accounts payable with aging buckets |
-| `/integrations` | Connector catalogue, sandbox connect + test + sync |
-| `/insights` | ML anomalies, merchant clusters, cash-flow risk, auto-categorise, train |
+| `/` | Company overview: revenue, opex, margin, burn, runway, cost per head, forecast, health score, insights |
+| `/expenses` | Company ledger with cost-centre / vendor / project filters, bulk actions, CSV export |
+| `/analytics` | Trends · Categories (Pareto, volatility) · Behaviour (heatmap, supplier cadence) · Compare |
+| `/financials` | P&L statement, cost-centre variance, supplier concentration, cash projection with committed outflow |
+| `/budgets` | Category and cost-centre caps against a pace marker |
+| `/subscriptions` | Declared commitments plus recurring charges mined from the ledger |
+| `/claims` | Reimbursement pipeline: submit → approve / reject → reimburse |
+| `/payables` | Vendor bills with aging buckets and payment recording |
+| `/vendors` | Supplier ledger, GSTIN compliance, spend share, ML risk scoring |
+| `/projects` | Client engagements: budget vs actual and what is re-billable |
+| `/team` | Members, roles, per-person spend caps and cost centres |
+| `/insights` | ML anomalies, supplier clusters, cash-flow risk, auto-categorise |
+| `/integrations` | Connector catalogue with sandbox connect, test and sync |
 | `/data` | CSV import with column mapping and dry run; CSV/JSON export |
-| `/settings` | Profile, theme, accounts, active sessions |
+| `/settings` | Profile, theme, company accounts, active sessions |
+
+What a role sees is decided by the API, not by hiding UI: FINANCE and above get
+company-wide figures, MANAGER and EMPLOYEE get their own spend, and the
+dashboard says so explicitly.
 
 ## Chart colour policy
 

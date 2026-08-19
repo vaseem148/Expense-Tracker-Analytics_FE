@@ -6,7 +6,6 @@ import type {
   BudgetPerformance,
   Category,
   DashboardResponse,
-  Goal,
   MerchantSlice,
   NotificationItem,
   Overview,
@@ -53,7 +52,6 @@ export const qk = {
   accounts: () => ['accounts'] as const,
   categoryList: () => ['categories'] as const,
   budgets: () => ['budgets'] as const,
-  goals: () => ['goals'] as const,
   recurring: () => ['recurring'] as const,
   notifications: () => ['notifications'] as const,
   orgs: () => ['orgs'] as const,
@@ -225,9 +223,6 @@ export const useCategories = () =>
 export const useBudgets = () =>
   useQuery({ queryKey: qk.budgets(), queryFn: () => api.get<BudgetPerformance>('/budgets') });
 
-export const useGoals = () =>
-  useQuery({ queryKey: qk.goals(), queryFn: () => api.get<Goal[]>('/goals') });
-
 export const useRecurring = () =>
   useQuery({
     queryKey: qk.recurring(),
@@ -333,32 +328,6 @@ export function useDeleteBudget() {
   });
 }
 
-export function useSaveGoal() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, ...body }: { id?: string } & Record<string, unknown>) =>
-      id ? api.patch(`/goals/${id}`, body) : api.post('/goals', body),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['goals'] }),
-  });
-}
-
-export function useContributeGoal() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, amount }: { id: string; amount: number }) =>
-      api.post(`/goals/${id}/contribute`, { amount }),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['goals'] }),
-  });
-}
-
-export function useDeleteGoal() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => api.del(`/goals/${id}`),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['goals'] }),
-  });
-}
-
 export function useSaveRecurring() {
   const qc = useQueryClient();
   return useMutation({
@@ -425,6 +394,31 @@ export const useOrgVendors = (orgId: string | undefined) =>
   useQuery({
     queryKey: qk.orgVendors(orgId ?? ''),
     queryFn: () => api.get<VendorRow[]>(`/orgs/${orgId}/vendors`),
+    enabled: Boolean(orgId),
+  });
+
+export interface ProjectRow {
+  id: string;
+  name: string;
+  code: string;
+  clientName: string | null;
+  status: string;
+  isBillable: boolean;
+  startDate: string;
+  endDate: string | null;
+  budget: number;
+  spent: number;
+  billableSpend: number;
+  remaining: number;
+  consumedPct: number | null;
+  transactions: number;
+  isOverBudget: boolean;
+}
+
+export const useOrgProjects = (orgId: string | undefined) =>
+  useQuery({
+    queryKey: ['org-projects', orgId] as const,
+    queryFn: () => api.get<ProjectRow[]>(`/orgs/${orgId}/projects`),
     enabled: Boolean(orgId),
   });
 

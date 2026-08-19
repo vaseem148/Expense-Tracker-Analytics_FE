@@ -9,7 +9,7 @@ export function AccountsCard() {
   return (
     <Card>
       <CardHeader
-        title="Accounts"
+        title="Company accounts"
         subtitle="Balances are derived from the ledger, never stored"
         icon={<Wallet size={15} />}
       />

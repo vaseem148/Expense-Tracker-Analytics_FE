@@ -5,10 +5,11 @@ import {
   ArrowRight,
   Banknote,
   Flame,
-  PiggyBank,
+  Percent,
   Repeat,
   Sparkles,
-  TrendingDown,
+  Timer,
+  Users,
 } from 'lucide-react';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -22,7 +23,7 @@ import { BarChart } from '@/components/charts/BarChart';
 import { RangePicker } from '@/components/layout/RangePicker';
 import { useDashboard } from '@/api/queries';
 import { useRange } from '@/hooks/useRange';
-import { compact, currency, longDate, percent } from '@/lib/format';
+import { compact, currency, longDate } from '@/lib/format';
 import { InsightList } from './InsightList';
 import { BudgetStrip } from './BudgetStrip';
 
@@ -56,23 +57,29 @@ export function DashboardPage() {
     return (
       <Card className="border-[var(--critical)]">
         <p className="text-[14px] text-[var(--critical-text)]">
-          Could not load the dashboard: {(error as Error).message}
+          Could not load the company overview: {(error as Error).message}
         </p>
       </Card>
     );
   }
 
   const currencyCode = data?.overview.currency ?? 'INR';
+  const runway = data?.overview.runway;
+  const lowRunway = runway?.months !== null && (runway?.months ?? 99) < 6;
 
   return (
     <div className="space-y-5">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Dashboard</h1>
+          <h1 className="text-[22px] font-semibold tracking-[-0.02em]">
+            {data?.overview.org.name ?? 'Company overview'}
+          </h1>
           <p className="mt-0.5 text-[13px] text-[var(--ink-muted)]">
             {data
-              ? `${longDate(data.overview.range.from)} - ${longDate(data.overview.range.to)} · ${data.overview.totals.transactions} transactions`
-              : 'Loading your ledger...'}
+              ? `${longDate(data.overview.range.from)} - ${longDate(data.overview.range.to)} · ${data.overview.totals.transactions} entries${
+                  data.overview.org.scopedToSelf ? ' · showing your own spend only' : ''
+                }`
+              : 'Loading the company ledger...'}
           </p>
         </div>
         <RangePicker
@@ -93,52 +100,67 @@ export function DashboardPage() {
         <>
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatTile
-              label="Total spent"
-              value={currency(data.overview.totals.expense, currencyCode)}
-              delta={data.overview.comparison.expenseChangePct}
-              deltaGoodWhenUp={false}
-              hint={`vs ${compact(data.overview.comparison.previousExpense)} previous period`}
-              icon={<TrendingDown size={15} />}
-              accent="var(--s1)"
-              spark={trend.map((t) => t.expense)}
-            />
-            <StatTile
-              label="Received"
+              label="Revenue"
               value={currency(data.overview.totals.income, currencyCode)}
               delta={data.overview.comparison.incomeChangePct}
-              hint={`Net ${compact(data.overview.totals.net)}`}
+              hint={
+                data.overview.rates.margin !== null
+                  ? `${data.overview.rates.margin}% net margin`
+                  : 'No revenue booked yet'
+              }
               icon={<Banknote size={15} />}
               accent="var(--s3)"
               spark={trend.map((t) => t.income ?? 0)}
             />
             <StatTile
-              label="Daily burn"
-              value={currency(data.overview.rates.dailyBurn, currencyCode)}
-              hint={`~${compact(data.overview.rates.monthlyRunRate)} per 30 days`}
+              label="Operating spend"
+              value={currency(data.overview.totals.expense, currencyCode)}
+              delta={data.overview.comparison.expenseChangePct}
+              deltaGoodWhenUp={false}
+              hint={`${compact(data.overview.rates.monthlyRunRate)} monthly run-rate`}
               icon={<Flame size={15} />}
               accent="var(--s2)"
+              spark={trend.map((t) => t.expense)}
             />
             <StatTile
-              label="Savings rate"
-              value={percent(data.overview.rates.savingsRate)}
-              hint={
-                data.overview.rates.savingsRate !== null && data.overview.rates.savingsRate >= 20
-                  ? 'Above the 20% benchmark'
-                  : 'Below the 20% benchmark'
-              }
-              icon={<PiggyBank size={15} />}
+              label="Runway"
+              value={runway?.months !== null ? `${runway?.months} mo` : 'Cash positive'}
+              hint={`${compact(runway?.cashOnHand ?? 0)} cash on hand`}
+              icon={<Timer size={15} />}
+              accent={lowRunway ? 'var(--critical)' : 'var(--s1)'}
+            />
+            <StatTile
+              label="Cost per employee"
+              value={currency(data.overview.team.costPerEmployee, currencyCode)}
+              hint={`${data.overview.team.headcount} people on the plan`}
+              icon={<Users size={15} />}
               accent="var(--s4)"
             />
           </section>
 
+          {lowRunway ? (
+            <div className="flex items-start gap-3 rounded-xl border border-[color-mix(in_oklab,var(--critical)_30%,transparent)] bg-[color-mix(in_oklab,var(--critical)_10%,transparent)] p-4">
+              <AlertTriangle size={17} className="mt-0.5 shrink-0 text-[var(--critical-text)]" />
+              <div>
+                <p className="text-[13.5px] font-medium text-[var(--critical-text)]">
+                  Runway under six months
+                </p>
+                <p className="mt-0.5 text-[12.5px] text-[var(--ink-2)]">
+                  Net burn is {currency(runway?.netBurn ?? 0, currencyCode)} a month against{' '}
+                  {compact(runway?.cashOnHand ?? 0)} of cash.
+                </p>
+              </div>
+            </div>
+          ) : null}
+
           <section className="grid gap-4 xl:grid-cols-[1.65fr_1fr]">
             <Card>
               <CardHeader
-                title="Spending trend"
+                title="Revenue and spend"
                 subtitle={
                   data.series.forecast
                     ? `${data.series.forecast.method} forecast · ${data.series.forecast.confidence} confidence`
-                    : 'Bucketed spend with a trailing moving average'
+                    : 'Company-wide, bucketed with a trailing average'
                 }
                 action={
                   <Badge tone="neutral">
@@ -146,18 +168,13 @@ export function DashboardPage() {
                   </Badge>
                 }
               />
-              <TrendChart
-                data={trend}
-                forecast={forecast}
-                currencyCode={currencyCode}
-                height={280}
-              />
+              <TrendChart data={trend} forecast={forecast} currencyCode={currencyCode} height={280} />
             </Card>
 
             <Card>
               <CardHeader
-                title="Where it went"
-                subtitle={`${data.categories.slices.length} categories in this window`}
+                title="Cost breakdown"
+                subtitle={`${data.categories.slices.length} cost categories in this window`}
                 action={
                   <Link to="/analytics" className="text-[12.5px] text-[var(--brand)] hover:underline">
                     Details
@@ -167,7 +184,7 @@ export function DashboardPage() {
               <DonutChart
                 data={data.categories.slices.map((s) => ({ name: s.name, total: s.total }))}
                 currencyCode={currencyCode}
-                centerLabel="Total spend"
+                centerLabel="Total opex"
               />
             </Card>
           </section>
@@ -179,7 +196,7 @@ export function DashboardPage() {
               <CardHeader
                 title="Financial health"
                 subtitle={data.health.summary}
-                icon={<Sparkles size={15} />}
+                icon={<Percent size={15} />}
               />
               <div className="flex flex-col items-center gap-6 sm:flex-row">
                 <Gauge
@@ -235,10 +252,10 @@ export function DashboardPage() {
           <section className="grid gap-4 xl:grid-cols-3">
             <Card>
               <CardHeader
-                title="Top merchants"
-                subtitle="By total spend in this window"
+                title="Top suppliers"
+                subtitle="By spend in this window"
                 action={
-                  <Link to="/analytics" className="text-[12.5px] text-[var(--brand)] hover:underline">
+                  <Link to="/vendors" className="text-[12.5px] text-[var(--brand)] hover:underline">
                     All
                   </Link>
                 }
@@ -247,7 +264,7 @@ export function DashboardPage() {
                 data={data.merchants.slice(0, 6).map((m) => ({
                   label: m.name,
                   value: m.total,
-                  meta: `${m.count} visits · avg ${compact(m.average)}`,
+                  meta: `${m.count} entries · avg ${compact(m.average)}`,
                 }))}
                 currencyCode={currencyCode}
               />
@@ -255,7 +272,7 @@ export function DashboardPage() {
 
             <Card>
               <CardHeader
-                title="Unusual activity"
+                title="Unusual spend"
                 subtitle="Scored against each category on its own"
                 icon={<AlertTriangle size={15} />}
                 action={
@@ -305,11 +322,14 @@ export function DashboardPage() {
 
             <Card>
               <CardHeader
-                title="Subscriptions found"
-                subtitle={`${compact(data.recurring.totalMonthlyCost)} a month locked in`}
+                title="Undeclared subscriptions"
+                subtitle={`${compact(data.recurring.totalMonthlyCost)} a month of unmanaged fixed cost`}
                 icon={<Repeat size={15} />}
                 action={
-                  <Link to="/recurring" className="text-[12.5px] text-[var(--brand)] hover:underline">
+                  <Link
+                    to="/subscriptions"
+                    className="text-[12.5px] text-[var(--brand)] hover:underline"
+                  >
                     Manage
                   </Link>
                 }
@@ -336,7 +356,7 @@ export function DashboardPage() {
                 </ul>
               ) : (
                 <p className="py-8 text-center text-[13px] text-[var(--ink-muted)]">
-                  No repeating charges detected yet
+                  Every repeating charge is already declared
                 </p>
               )}
             </Card>
@@ -344,15 +364,15 @@ export function DashboardPage() {
 
           <Card className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="text-[14px] font-medium">Want the deeper cuts?</p>
+              <p className="text-[14px] font-medium">Go deeper</p>
               <p className="text-[12.5px] text-[var(--ink-muted)]">
-                Heatmaps, Pareto concentration, period comparison and merchant clustering.
+                P and L statement, cost-centre variance, supplier concentration, cash projection.
               </p>
             </div>
             <div className="flex gap-2">
-              <Link to="/analytics">
+              <Link to="/financials">
                 <Button variant="outline" size="sm">
-                  Open analytics <ArrowRight size={14} />
+                  Financials <ArrowRight size={14} />
                 </Button>
               </Link>
               <Link to="/insights">

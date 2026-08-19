@@ -57,12 +57,15 @@ export interface Transaction {
   isRecurring: boolean;
   scope: string;
   taxAmount: number;
+  taxRateBps: number;
   isBillable: boolean;
+  isReimbursable: boolean;
   account: { id: string; name: string; color: string } | null;
   toAccount: { id: string; name: string } | null;
   category: { id: string; name: string; color: string; icon: string } | null;
   vendor: { id: string; name: string } | null;
   department: { id: string; name: string; color: string } | null;
+  project: { id: string; name: string } | null;
   tags: { id: string; name: string; color: string }[];
   isDeleted: boolean;
   createdAt: string;
@@ -131,16 +134,27 @@ export interface CategorySlice {
 }
 
 export interface Overview {
+  org: { id: string; name: string; role: string; scopedToSelf: boolean };
   currency: string;
   range: { from: string; to: string; days: number };
-  totals: { expense: number; income: number; net: number; transactions: number; transfers: number };
+  totals: {
+    expense: number;
+    income: number;
+    net: number;
+    transactions: number;
+    transfers: number;
+    tax: number;
+    billable: number;
+  };
   rates: {
     dailyBurn: number;
     monthlyRunRate: number;
-    savingsRate: number | null;
+    margin: number | null;
     expenseToIncome: number | null;
     averageTransaction: number;
   };
+  runway: { cashOnHand: number; netBurn: number; months: number | null };
+  team: { headcount: number; costPerEmployee: number };
   comparison: {
     expenseChangePct: number | null;
     incomeChangePct: number | null;
@@ -148,7 +162,6 @@ export interface Overview {
     previousIncome: number;
   };
   topCategory: { name: string; color: string; total: number; share: number } | null;
-  budgetedIncome: number;
   projectedMonthEnd: number;
 }
 
@@ -175,6 +188,7 @@ export interface BudgetItem {
   name: string;
   period: string;
   categoryId: string | null;
+  departmentId: string | null;
   categoryName: string;
   categoryColor: string;
   limit: number;
@@ -257,21 +271,6 @@ export interface MerchantSlice {
   firstSeen: string;
   lastSeen: string;
   cadenceDays: number | null;
-}
-
-export interface Goal {
-  id: string;
-  name: string;
-  target: number;
-  saved: number;
-  remaining: number;
-  progressPct: number;
-  targetDate: string | null;
-  daysLeft: number | null;
-  requiredMonthly: number | null;
-  color: string;
-  icon: string;
-  isAchieved: boolean;
 }
 
 export interface RecurringRule {

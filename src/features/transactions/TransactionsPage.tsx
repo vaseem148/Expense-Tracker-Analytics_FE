@@ -88,11 +88,11 @@ export function TransactionsPage() {
     <div className="space-y-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Transactions</h1>
+          <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Expenses</h1>
           <p className="mt-0.5 text-[13px] text-[var(--ink-muted)]">
-            {meta ? `${meta.total.toLocaleString('en-IN')} records` : 'Loading...'}
+            {meta ? `${meta.total.toLocaleString('en-IN')} entries` : 'Loading the company ledger...'}
             {meta?.totals
-              ? ` · ${compact(meta.totals.expense)} out, ${compact(meta.totals.income)} in`
+              ? ` · ${compact(meta.totals.expense)} spent, ${compact(meta.totals.income)} received`
               : ''}
           </p>
         </div>
@@ -121,7 +121,7 @@ export function TransactionsPage() {
             <Input
               value={search}
               onChange={(e) => applySearch(e.target.value)}
-              placeholder="Search description, merchant or notes"
+              placeholder="Search description, vendor or notes"
               className="pl-9"
             />
           </div>

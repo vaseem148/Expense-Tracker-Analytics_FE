@@ -9,24 +9,24 @@ import { cn } from '@/lib/cn';
 
 const HIGHLIGHTS = [
   {
+    icon: Building2,
+    title: 'Cost centres, not categories alone',
+    body: 'Every rupee carries a department, a vendor and a project, so variance has an owner.',
+  },
+  {
     icon: TrendingUp,
-    title: 'Forecasting that admits doubt',
-    body: 'Holt-Winters projections ship with prediction intervals, not one confident line.',
+    title: 'Runway you can act on',
+    body: 'Burn, margin and a cash projection that includes invoices already committed.',
   },
   {
     icon: Brain,
-    title: 'Anomalies scored per category',
-    body: 'A large grocery run and a large flight are judged against their own histories.',
-  },
-  {
-    icon: Building2,
-    title: 'Business controls built in',
-    body: 'Departments, vendors, approvals, GST and runway in the same ledger.',
+    title: 'Spend controls that hold',
+    body: 'Per-person caps, approval policies, and anomalies scored against each category.',
   },
   {
     icon: ShieldCheck,
-    title: 'Integrations without exposure',
-    body: 'Credentials encrypted at rest, webhooks HMAC-signed, API keys shown once.',
+    title: 'Connected to your stack',
+    body: 'Tally, Zoho Books, QuickBooks and Xero, with credentials encrypted at rest.',
   },
 ];
 
@@ -34,7 +34,12 @@ export function LoginPage() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [form, setForm] = useState({ email: 'demo@expense.app', password: 'Demo#1234', name: '' });
+  const [form, setForm] = useState({
+    email: 'demo@expense.app',
+    password: 'Demo#1234',
+    name: '',
+    companyName: '',
+  });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -44,7 +49,13 @@ export function LoginPage() {
     setError(null);
     try {
       if (mode === 'login') await login(form.email, form.password);
-      else await register({ email: form.email, password: form.password, name: form.name });
+      else
+        await register({
+          email: form.email,
+          password: form.password,
+          name: form.name,
+          companyName: form.companyName,
+        });
       toast.success(mode === 'login' ? 'Welcome back' : 'Account created');
       navigate('/');
     } catch (err) {
@@ -74,21 +85,19 @@ export function LoginPage() {
           </span>
           <div>
             <p className="text-[15px] font-semibold tracking-[-0.01em]">Expense Analytics</p>
-            <p className="text-[12px] text-[var(--ink-muted)]">
-              Personal ledger, business intelligence
-            </p>
+            <p className="text-[12px] text-[var(--ink-muted)]">Company spend platform</p>
           </div>
         </div>
 
         <div className="relative max-w-lg">
           <h1 className="text-[34px] font-semibold leading-[1.15] tracking-[-0.03em] text-[var(--ink)]">
-            Every rupee explained,
+            Know what the company
             <br />
-            <span className="text-[var(--brand)]">before you spend the next one.</span>
+            <span className="text-[var(--brand)]">spends, and why.</span>
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-[var(--ink-2)]">
-            Import a statement, connect your accounting stack, and get a forecast, an anomaly
-            report and a budget verdict that all trace back to a number you can check.
+            Connect your accounting stack, route claims through policy, and get a burn forecast,
+            a supplier risk read and a cost-centre verdict that all trace back to a checkable number.
           </p>
 
           <ul className="mt-9 space-y-4">
@@ -120,26 +129,38 @@ export function LoginPage() {
           </div>
 
           <h2 className="text-[24px] font-semibold tracking-[-0.02em]">
-            {mode === 'login' ? 'Sign in' : 'Create your account'}
+            {mode === 'login' ? 'Sign in' : 'Set up your company'}
           </h2>
           <p className="mt-1.5 text-[13.5px] text-[var(--ink-muted)]">
             {mode === 'login'
-              ? 'Use the seeded demo account or your own credentials.'
-              : 'Default categories and an account are created for you.'}
+              ? 'Use the seeded demo company or your own credentials.'
+              : 'We provision your company, cost centres and approval policies.'}
           </p>
 
           <form onSubmit={submit} className="mt-7 space-y-4">
             {mode === 'register' ? (
-              <div>
-                <Label>Full name</Label>
-                <Input
-                  required
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Mohamed Vaseem"
-                  autoComplete="name"
-                />
-              </div>
+              <>
+                <div>
+                  <Label>Your name</Label>
+                  <Input
+                    required
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Mohamed Vaseem"
+                    autoComplete="name"
+                  />
+                </div>
+                <div>
+                  <Label hint="you become its owner">Company name</Label>
+                  <Input
+                    required
+                    value={form.companyName}
+                    onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                    placeholder="Vaseem Technologies"
+                    autoComplete="organization"
+                  />
+                </div>
+              </>
             ) : null}
 
             <div>
@@ -176,7 +197,7 @@ export function LoginPage() {
               loading={busy}
               className="w-full justify-center"
             >
-              {mode === 'login' ? 'Sign in' : 'Create account'}
+              {mode === 'login' ? 'Sign in' : 'Create company'}
               <ArrowRight size={16} />
             </Button>
           </form>
@@ -197,7 +218,7 @@ export function LoginPage() {
               'text-[var(--ink-2)] transition-colors hover:border-[var(--brand)] hover:text-[var(--brand)]',
             )}
           >
-            {mode === 'login' ? 'Create a new account' : 'I already have an account'}
+            {mode === 'login' ? 'Set up a new company' : 'I already have an account'}
           </button>
 
           {mode === 'login' ? (

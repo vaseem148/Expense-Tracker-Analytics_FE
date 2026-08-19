@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import {
-  ArrowLeftRight,
   Blocks,
   Brain,
+  Briefcase,
   Building2,
   ChevronsLeft,
   FileSpreadsheet,
@@ -11,26 +11,32 @@ import {
   Receipt,
   Repeat,
   Settings,
-  Target,
+  Store,
   TrendingUp,
+  Users,
   Wallet,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useUi } from '@/store/ui';
 
-const PERSONAL = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
+const SPEND = [
+  { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
+  { to: '/expenses', label: 'Expenses', icon: Wallet },
   { to: '/analytics', label: 'Analytics', icon: TrendingUp },
-  { to: '/budgets', label: 'Budgets', icon: PiggyBank },
-  { to: '/goals', label: 'Goals', icon: Target },
-  { to: '/recurring', label: 'Recurring', icon: Repeat },
+  { to: '/financials', label: 'Financials', icon: Building2 },
 ];
 
-const BUSINESS = [
-  { to: '/business', label: 'Business', icon: Building2 },
-  { to: '/business/claims', label: 'Claims', icon: Receipt },
-  { to: '/business/invoices', label: 'Payables', icon: Wallet },
+const CONTROL = [
+  { to: '/budgets', label: 'Budgets', icon: PiggyBank },
+  { to: '/subscriptions', label: 'Subscriptions', icon: Repeat },
+  { to: '/claims', label: 'Claims', icon: Receipt },
+  { to: '/payables', label: 'Payables', icon: FileSpreadsheet },
+];
+
+const COMPANY = [
+  { to: '/vendors', label: 'Vendors', icon: Store },
+  { to: '/projects', label: 'Projects', icon: Briefcase },
+  { to: '/team', label: 'Team', icon: Users },
 ];
 
 const PLATFORM = [
@@ -60,14 +66,15 @@ export function Sidebar() {
             <p className="truncate text-[13.5px] font-semibold leading-tight tracking-[-0.01em]">
               Expense Analytics
             </p>
-            <p className="truncate text-[11px] text-[var(--ink-muted)]">Personal + business</p>
+            <p className="truncate text-[11px] text-[var(--ink-muted)]">Company spend platform</p>
           </div>
         ) : null}
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2.5 pb-4">
-        <NavGroup title="Personal" items={PERSONAL} collapsed={sidebarCollapsed} />
-        <NavGroup title="Business" items={BUSINESS} collapsed={sidebarCollapsed} />
+        <NavGroup title="Spend" items={SPEND} collapsed={sidebarCollapsed} />
+        <NavGroup title="Controls" items={CONTROL} collapsed={sidebarCollapsed} />
+        <NavGroup title="Company" items={COMPANY} collapsed={sidebarCollapsed} />
         <NavGroup title="Platform" items={PLATFORM} collapsed={sidebarCollapsed} />
       </nav>
 

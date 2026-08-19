@@ -32,7 +32,7 @@ export function BudgetsPage() {
         <div>
           <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Budgets</h1>
           <p className="mt-0.5 text-[13px] text-[var(--ink-muted)]">
-            Consumption measured against the clock, not just the cap
+            Cost-centre and category caps, measured against the clock rather than the cap alone
           </p>
         </div>
         <Button variant="primary" icon={<Plus size={15} />} onClick={openCreate}>
@@ -88,7 +88,7 @@ export function BudgetsPage() {
               <Card className="col-span-full py-16 text-center">
                 <p className="text-[14px] font-medium">No budgets yet</p>
                 <p className="mt-1 text-[13px] text-[var(--ink-muted)]">
-                  A cap plus a pace marker turns spending into something you can steer.
+                  A cap plus a pace marker turns company spend into something you can steer.
                 </p>
                 <Button variant="primary" className="mx-auto mt-4" onClick={openCreate}>
                   Create your first budget
